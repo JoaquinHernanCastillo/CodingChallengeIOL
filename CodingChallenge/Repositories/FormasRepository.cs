@@ -88,5 +88,19 @@ namespace CodingChallenge.Repositories
                 return idForma;
             }
         }
+                public static string FormulaCalculoArea(int idForma)
+        {
+            using (var db = new CodingChallengeContext())
+            {
+                return db.Formas.Where(f => f.Id == idForma).FirstOrDefault().CalculoArea;
+            }
+        }
+        public static string FormulaCalculoPerimetro(int idForma)
+        {
+            using (var db = new CodingChallengeContext())
+            {
+                return db.Formas.Where(f => f.Id == idForma).FirstOrDefault().CalculoPerimetro;
+            }
+        }
     }
 }

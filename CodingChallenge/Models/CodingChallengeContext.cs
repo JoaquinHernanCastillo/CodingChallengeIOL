@@ -86,6 +86,10 @@ namespace CodingChallenge.Models
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
+                entity.Property(e => e.Formas)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.ListaVacia)
                     .HasMaxLength(50)
                     .IsUnicode(false);

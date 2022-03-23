@@ -22,7 +22,7 @@ namespace CodingChallenge.Repositories
                     forIdioma.IdIdioma = item.IdIdioma;
                     forIdioma.Idioma = db.Idiomas.FirstOrDefault(i => i.Id == item.IdIdioma).Idioma1;
                     forIdioma.IdForma = item.IdForma;
-                    forIdioma.Forma = db.Formas.FirstOrDefault(f => f.Id == item.IdForma).Forma1;
+                    //forIdioma.Forma = db.Formas.FirstOrDefault(f => f.Id == item.IdForma).Forma1;
                     forIdioma.Singular = item.Singular;
                     forIdioma.Plural = item.Plural;
         
@@ -47,8 +47,8 @@ namespace CodingChallenge.Repositories
                         nuevaFormaIdioma.Id = id;
                         nuevaFormaIdioma.IdIdioma = formasIdiomasDTO.IdIdioma > 0 ? formasIdiomasDTO.IdIdioma :
                             db.Idiomas.FirstOrDefault(f => f.Idioma1.Trim().ToLower() == formasIdiomasDTO.Idioma.Trim().ToLower()).Id;
-                        nuevaFormaIdioma.IdForma = formasIdiomasDTO.IdForma > 0 ? formasIdiomasDTO.IdForma :
-                            db.Formas.FirstOrDefault(f => f.Forma1.Trim().ToLower() == formasIdiomasDTO.Forma.Trim().ToLower()).Id;
+                        //nuevaFormaIdioma.IdForma = formasIdiomasDTO.IdForma > 0 ? formasIdiomasDTO.IdForma :
+                        //    db.Formas.FirstOrDefault(f => f.Forma1.Trim().ToLower() == formasIdiomasDTO.Forma.Trim().ToLower()).Id;
                         nuevaFormaIdioma.Singular = formasIdiomasDTO.Singular;
                         nuevaFormaIdioma.Plural = formasIdiomasDTO.Plural;
                         db.FormasIdiomas.Add(nuevaFormaIdioma);
@@ -77,8 +77,8 @@ namespace CodingChallenge.Repositories
                     {
                         formaIdiomaRegistrada.IdIdioma = formasIdiomasDTO.IdIdioma > 0 ? formasIdiomasDTO.IdIdioma :
                             db.Idiomas.FirstOrDefault(f => f.Idioma1.Trim().ToLower() == formasIdiomasDTO.Idioma.Trim().ToLower()).Id;
-                        formaIdiomaRegistrada.IdForma = formasIdiomasDTO.IdForma > 0 ? formasIdiomasDTO.IdForma :
-                            db.Formas.FirstOrDefault(f => f.Forma1.Trim().ToLower() == formasIdiomasDTO.Forma.Trim().ToLower()).Id;
+                        //formaIdiomaRegistrada.IdForma = formasIdiomasDTO.IdForma > 0 ? formasIdiomasDTO.IdForma :
+                        //    db.Formas.FirstOrDefault(f => f.Forma1.Trim().ToLower() == formasIdiomasDTO.Forma.Trim().ToLower()).Id;
                         formaIdiomaRegistrada.Singular = formasIdiomasDTO.Singular;
                         formaIdiomaRegistrada.Plural = formasIdiomasDTO.Plural;
         
@@ -94,6 +94,17 @@ namespace CodingChallenge.Repositories
             {
                 return update;
             }
+        }
+        
+        internal static string TraducirForma(int tipo, int cantidad, int idioma)
+        {
+            string forma = "";
+            using (var db = new CodingChallengeContext())
+            {
+                var fdb = db.FormasIdiomas.FirstOrDefault(f => f.IdIdioma == idioma && f.IdForma == tipo);
+                forma = cantidad > 1 ? fdb.Plural : fdb.Singular;
+            }
+            return forma;
         }
     }
 }

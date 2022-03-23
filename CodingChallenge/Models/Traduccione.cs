@@ -14,5 +14,6 @@ namespace CodingChallenge.Models
         public string Total { get; set; }
         public string Perimetro { get; set; }
         public string Area { get; set; }
+        public string Formas { get; set; }
     }
 }

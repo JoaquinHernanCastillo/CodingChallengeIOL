@@ -32,7 +32,7 @@ namespace CodingChallenge.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        
         [HttpPut]
         [Route("Actualizar")]
         public IActionResult Actualizar(Forma forma)

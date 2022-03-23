@@ -98,5 +98,88 @@ namespace CodingChallenge.Repositories
                 return update;
             }
         }
+        
+        public static string ListaVacia(int idioma)
+        {
+            string lvacia = "";
+            using (var db = new CodingChallengeContext())
+            {
+                var mje = db.Traducciones.Where(t => t.IdIdioma == idioma).FirstOrDefault().ListaVacia;
+                lvacia = $"<h1>{mje}</h1>";
+            }
+            return lvacia;
+        }
+        
+        public static string ReporteFormas(int idioma)
+        {
+            string reporte = "";
+            using (var db = new CodingChallengeContext())
+            {
+                var mje = db.Traducciones.Where(t => t.IdIdioma == idioma).FirstOrDefault().ReporteDeFormas;
+                reporte = $"<h1>{mje}</h1>";
+            }
+            return reporte;
+        }
+        
+        public static string Perimetro(int idioma)
+        {
+            string perimetro = "";
+            using (var db = new CodingChallengeContext())
+            {
+                perimetro = db.Traducciones.Where(t => t.IdIdioma == idioma).FirstOrDefault().Perimetro;
+            }
+            return perimetro;
+        }
+        
+        public static string Area(int idioma)
+        {
+            string area = "";
+            using (var db = new CodingChallengeContext())
+            {
+                area = db.Traducciones.Where(t => t.IdIdioma == idioma).FirstOrDefault().Area;
+            }
+            return area;
+        }
+        public static string Total(int idioma)
+        {
+            string total = "";
+            using (var db = new CodingChallengeContext())
+            {
+                total = db.Traducciones.Where(t => t.IdIdioma == idioma).FirstOrDefault().Total + ":< br />";
+            }
+            return total;
+        }
+        
+        public static string TotalFormas(int idioma, int cantidad)
+        {
+            string formas = "";
+            //using (var db = new CodingChallengeContext())
+            //{
+            //    string traduccionFormas = db.Traducciones.Where(t => t.IdIdioma == idioma).FirstOrDefault().Formas;
+            //
+            //    formas = String.Format("{0} {1} ", cantidad, traduccionFormas);
+            //}
+            return formas;
+        }
+        
+        internal static string TotalPerimetro(int idioma, decimal totalPerimetro)
+        {
+            string tPerimetro = "";
+            using (var db = new CodingChallengeContext())
+            {
+                tPerimetro = String.Format("{0} {1:#.##} ", Perimetro(idioma), totalPerimetro);
+            }
+            return tPerimetro;
+        }
+        
+        internal static string TotalArea(int idioma, decimal totalArea)
+        {
+            string tArea = "";
+            using (var db = new CodingChallengeContext())
+            {
+                tArea = String.Format("{0} {1:#.##} ", Area(idioma), totalArea);
+            }
+            return tArea;
+        }
     }
 }
