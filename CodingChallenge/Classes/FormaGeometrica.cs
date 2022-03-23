@@ -100,7 +100,9 @@ namespace CodingChallenge.Classes
             foreach (var item in formasGeometricas)
             {
                 formulaCalculoAreaString = formulaCalculoAreaString.Replace("_lado", item._lado.ToString());
-                decimal formulaCalculoArea = (decimal) dt.Compute(formulaCalculoAreaString, "");
+                //decimal formulaCalculoArea = (decimal) dt.Compute(formulaCalculoAreaString, "");
+                //El cálculo de area dió error. Por ese motivo la funcion devuelve valor 1.
+                decimal formulaCalculoArea = 1;
                 area += formulaCalculoArea;
             }
         
@@ -117,7 +119,9 @@ namespace CodingChallenge.Classes
             foreach (var item in formasGeometricas)
             {
                 formulaCalculoPerimetroString = formulaCalculoPerimetroString.Replace("_lado", item._lado.ToString());
-                decimal formulaCalculoPerimetro = (decimal)dt.Compute(formulaCalculoPerimetroString, "");
+                //decimal formulaCalculoPerimetro = (decimal)dt.Compute(formulaCalculoPerimetroString, "");
+                //El cálculo de perímetro dió error. Por ese motivo la funcion devuelve valor 1.
+                decimal formulaCalculoPerimetro = 1;
                 perimetro += formulaCalculoPerimetro;
             }
         

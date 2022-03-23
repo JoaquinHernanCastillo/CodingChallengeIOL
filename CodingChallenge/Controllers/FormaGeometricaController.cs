@@ -10,6 +10,12 @@ namespace CodingChallenge.Controllers
     [Route("api/FormaGeometrica")]
     public class FormaGeometricaController : Controller
     {
+        /// <summary>
+        /// Llama clase Impresión refactoreada
+        /// </summary>
+        /// <param name="formasGeometricasDTOs"></param>
+        /// <param name="idioma"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Impresion")]
         public IActionResult Impresion(List<FormasGeometricasDTO> formasGeometricasDTOs, string idioma)
@@ -27,7 +33,7 @@ namespace CodingChallenge.Controllers
             var idIdioma = IdiomasRepository.ObtenerIdIdioma(idioma);
             
             var resumen = FormaGeometrica.Imprimir(ListadoFormasGeometricas, idIdioma);
-            return Ok("Ejecuta");
+            return Ok(resumen);
         }
     }
 }
