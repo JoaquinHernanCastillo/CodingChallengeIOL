@@ -25,7 +25,7 @@ namespace CodingChallenge.Data.Tests
         [TestCase]
         public void TestResumenListaConUnCuadrado()
         {
-            var cuadrados = new List<FormaGeometrica> {new FormaGeometrica(FormaGeometrica.Cuadrado, 5)};
+            var cuadrados = new List<FormaGeometrica> { new FormaGeometrica(FormaGeometrica.Cuadrado, 5, 0) };
 
             var resumen = FormaGeometrica.Imprimir(cuadrados, FormaGeometrica.Castellano);
 
@@ -37,9 +37,9 @@ namespace CodingChallenge.Data.Tests
         {
             var cuadrados = new List<FormaGeometrica>
             {
-                new FormaGeometrica(FormaGeometrica.Cuadrado, 5),
-                new FormaGeometrica(FormaGeometrica.Cuadrado, 1),
-                new FormaGeometrica(FormaGeometrica.Cuadrado, 3)
+                new FormaGeometrica(FormaGeometrica.Cuadrado, 5,0),
+                new FormaGeometrica(FormaGeometrica.Cuadrado, 1,0),
+                new FormaGeometrica(FormaGeometrica.Cuadrado, 3,0)
             };
 
             var resumen = FormaGeometrica.Imprimir(cuadrados, FormaGeometrica.Ingles);
@@ -52,13 +52,13 @@ namespace CodingChallenge.Data.Tests
         {
             var formas = new List<FormaGeometrica>
             {
-                new FormaGeometrica(FormaGeometrica.Cuadrado, 5),
-                new FormaGeometrica(FormaGeometrica.Circulo, 3),
-                new FormaGeometrica(FormaGeometrica.TrianguloEquilatero, 4),
-                new FormaGeometrica(FormaGeometrica.Cuadrado, 2),
-                new FormaGeometrica(FormaGeometrica.TrianguloEquilatero, 9),
-                new FormaGeometrica(FormaGeometrica.Circulo, 2.75m),
-                new FormaGeometrica(FormaGeometrica.TrianguloEquilatero, 4.2m)
+                new FormaGeometrica(FormaGeometrica.Cuadrado, 5, 0),
+                new FormaGeometrica(FormaGeometrica.Circulo, 3, 0),
+                new FormaGeometrica(FormaGeometrica.TrianguloEquilatero, 4, 0),
+                new FormaGeometrica(FormaGeometrica.Cuadrado, 2, 0),
+                new FormaGeometrica(FormaGeometrica.TrianguloEquilatero, 9, 0),
+                new FormaGeometrica(FormaGeometrica.Circulo, 2.75m, 0),
+                new FormaGeometrica(FormaGeometrica.TrianguloEquilatero, 4.2m, 0)
             };
 
             var resumen = FormaGeometrica.Imprimir(formas, FormaGeometrica.Ingles);
@@ -73,19 +73,35 @@ namespace CodingChallenge.Data.Tests
         {
             var formas = new List<FormaGeometrica>
             {
-                new FormaGeometrica(FormaGeometrica.Cuadrado, 5),
-                new FormaGeometrica(FormaGeometrica.Circulo, 3),
-                new FormaGeometrica(FormaGeometrica.TrianguloEquilatero, 4),
-                new FormaGeometrica(FormaGeometrica.Cuadrado, 2),
-                new FormaGeometrica(FormaGeometrica.TrianguloEquilatero, 9),
-                new FormaGeometrica(FormaGeometrica.Circulo, 2.75m),
-                new FormaGeometrica(FormaGeometrica.TrianguloEquilatero, 4.2m)
+                new FormaGeometrica(FormaGeometrica.Cuadrado, 5, 0),
+                new FormaGeometrica(FormaGeometrica.Circulo, 3, 0),
+                new FormaGeometrica(FormaGeometrica.TrianguloEquilatero, 4, 0),
+                new FormaGeometrica(FormaGeometrica.Cuadrado, 2, 0),
+                new FormaGeometrica(FormaGeometrica.TrianguloEquilatero, 9, 0),
+                new FormaGeometrica(FormaGeometrica.Circulo, 2.75m, 0),
+                new FormaGeometrica(FormaGeometrica.TrianguloEquilatero, 4.2m, 0)
             };
 
             var resumen = FormaGeometrica.Imprimir(formas, FormaGeometrica.Castellano);
 
             Assert.AreEqual(
                 "<h1>Reporte de Formas</h1>2 Cuadrados | Area 29 | Perimetro 28 <br/>2 Círculos | Area 13,01 | Perimetro 18,06 <br/>3 Triángulos | Area 49,64 | Perimetro 51,6 <br/>TOTAL:<br/>7 formas Perimetro 97,66 Area 91,65",
+                resumen);
+        }
+
+        [TestCase]
+        public void TestResumenConDosTrapeciosRectangulos()
+        {
+            var rectangulos = new List<FormaGeometrica>
+            {
+                new FormaGeometrica(FormaGeometrica.TrapecioRectangulo, 5, 4),
+                new FormaGeometrica(FormaGeometrica.TrapecioRectangulo, 3, 5)
+            };
+
+            var resumen = FormaGeometrica.Imprimir(rectangulos, FormaGeometrica.Frances);
+
+            Assert.AreEqual(
+                "<h1>Rapport de formes géométriques</h1>2 Trapèzes | Région 35 | Périmètre 34 <br/>TOTAL:<br/>2 formes Périmètre 34 Région 35",
                 resumen);
         }
     }

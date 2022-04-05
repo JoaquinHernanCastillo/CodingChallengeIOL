@@ -7,12 +7,12 @@
  * TODO: Implementar Trapecio/Rectangulo, agregar otro idioma a reporting.
  * */
 
-using CodingChallenge.Data.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace CodingChallenge.Data.Classes
 {
@@ -23,7 +23,7 @@ namespace CodingChallenge.Data.Classes
         public const int Cuadrado = 1;
         public const int TrianguloEquilatero = 2;
         public const int Circulo = 3;
-        public const int Trapecio = 4;
+        public const int TrapecioRectangulo = 4;
 
         #endregion
 
@@ -31,133 +31,256 @@ namespace CodingChallenge.Data.Classes
 
         public const int Castellano = 1;
         public const int Ingles = 2;
+        public const int Frances = 3;
 
         #endregion
 
         private readonly decimal _lado;
+        private readonly decimal _altura;
+        private static int _idioma;
 
         public int Tipo { get; set; }
 
-        public FormaGeometrica(int tipo, decimal ancho)
+        public FormaGeometrica(int tipo, decimal ancho, decimal altura)
         {
             Tipo = tipo;
             _lado = ancho;
+            _altura = altura;
         }
 
         public static string Imprimir(List<FormaGeometrica> formas, int idioma)
         {
+            _idioma = idioma;
+
             var sb = new StringBuilder();
 
-            if (!formas.Any() || formas == null)
+            //Controla existencia de formas para continuar.
+            if (!formas.Any()) return MensajeListaVacia(sb).ToString();
+
+            // Hay por lo menos una forma, se puede continuar.
+            // HEADER
+            TituloReporteDeFormas(sb);
+
+            //Inicializa variables
+            int numeroCuadrados, numeroCirculos, numeroTrapecios, numeroTriangulos;
+            decimal areaCuadrados, areaCirculos, areaTriangulos, areaTrapecios, perimetroCuadrados, perimetroCirculos, perimetroTrapecios, perimetroTriangulos;
+            InicializarVariables(out numeroCuadrados, out numeroCirculos, out numeroTriangulos, out numeroTrapecios, out areaCuadrados, out areaCirculos, out areaTriangulos, out areaTrapecios, out perimetroCuadrados, out perimetroCirculos, out perimetroTriangulos, out perimetroTrapecios);
+
+            //Recorre listado de formulas y obtiene la cantidad, area y perimetro total.
+            for (var i = 0; i < formas.Count; i++)
             {
-                //if (idioma == Castellano)
-                //    sb.Append("<h1>Lista vacía de formas!</h1>");
-                //else
-                //    sb.Append("<h1>Empty list of shapes!</h1>");
-                var mje = TraduccionRepository.ListaVacia(idioma);
-                sb.Append(mje);
-            }
-            else
-            {
-                // Hay por lo menos una forma
-                // HEADER
-                var mje = TraduccionRepository.ReporteFormas(idioma);
-                sb.Append(mje);
-
-                var cantidadDeFormas = (from f in formas
-                                        group f by f.Tipo into fGroup
-                                        select new
-                                        {
-                                            IdForma = fGroup.Key,
-                                            Cantidad = fGroup.Count(),
-                                            TotalArea = 0,
-                                            TotalPerimetro = 0
-                                        });
-
-                List<FormasCalculos> ListadoFormasCalculos = new List<FormasCalculos>();
-
-                foreach (var item in cantidadDeFormas)
+                if (formas[i].Tipo == Cuadrado)
                 {
-                    FormasCalculos f = new FormasCalculos();
-                    f.IdForma = item.IdForma;
-                    f.Cantidad = item.Cantidad;
-                    f.TotalArea = CalcularAreaDeForma(formas.FindAll(ff => ff.Tipo == item.IdForma), item.IdForma);
-                    f.TotalPerimetro = CalcularPerimetroDeForma(formas.FindAll(ff => ff.Tipo == item.IdForma), item.IdForma);
-
-                    ListadoFormasCalculos.Add(f);
+                    numeroCuadrados++;
+                    areaCuadrados += formas[i].CalcularArea();
+                    perimetroCuadrados += formas[i].CalcularPerimetro();
                 }
-
-                foreach (var item in ListadoFormasCalculos)
+                if (formas[i].Tipo == Circulo)
                 {
-                    sb.Append(ObtenerLinea(item.Cantidad, item.TotalArea, item.TotalPerimetro, item.IdForma, idioma));
+                    numeroCirculos++;
+                    areaCirculos += formas[i].CalcularArea();
+                    perimetroCirculos += formas[i].CalcularPerimetro();
                 }
-
-                // FOOTER
-                mje = TraduccionRepository.Total(idioma);
-                sb.Append(mje);
-
-                mje = TraduccionRepository.TotalFormas(idioma, formas.Count);
-                sb.Append(mje);
-                
-                mje = TraduccionRepository.TotalPerimetro(idioma, ListadoFormasCalculos.Select(dd => dd.TotalPerimetro).Sum());
-                sb.Append(mje);
-
-                mje = TraduccionRepository.TotalArea(idioma, ListadoFormasCalculos.Select(dd => dd.TotalArea).Sum());
-                sb.Append(mje);
+                if (formas[i].Tipo == TrianguloEquilatero)
+                {
+                    numeroTriangulos++;
+                    areaTriangulos += formas[i].CalcularArea();
+                    perimetroTriangulos += formas[i].CalcularPerimetro();
+                }
+                if (formas[i].Tipo == TrapecioRectangulo)
+                {
+                    numeroTrapecios++;
+                    areaTrapecios += formas[i].CalcularArea();
+                    perimetroTrapecios += formas[i].CalcularPerimetro();
+                }
             }
+
+            //Obtiene las lineas correspondientes a cada Forma
+            sb.Append(ObtenerLinea(numeroCuadrados, areaCuadrados, perimetroCuadrados, Cuadrado));
+            sb.Append(ObtenerLinea(numeroCirculos, areaCirculos, perimetroCirculos, Circulo));
+            sb.Append(ObtenerLinea(numeroTriangulos, areaTriangulos, perimetroTriangulos, TrianguloEquilatero));
+            sb.Append(ObtenerLinea(numeroTrapecios, areaTrapecios, perimetroTrapecios, TrapecioRectangulo));
+
+            // FOOTER
+            sb.Append("TOTAL:<br/>");
+            sb.Append(numeroCuadrados + numeroCirculos + numeroTriangulos + numeroTrapecios + " " + ObtenerTraduccionFomas() + " ");
+            sb.Append(ObtenerTraduccionPerimetro() + " " + (perimetroCuadrados + perimetroTriangulos + perimetroCirculos + perimetroTrapecios).ToString("#.##") + " ");
+            sb.Append(ObtenerTraduccionArea() + " " + (areaCuadrados + areaCirculos + areaTriangulos + areaTrapecios).ToString("#.##"));
 
             return sb.ToString();
         }
 
-        private static decimal CalcularAreaDeForma(List<FormaGeometrica> formasGeometricas, int idForma)
+        private static string ObtenerTraduccionPerimetro()
         {
-            DataTable dt = new DataTable();
-            decimal area = 0;
-
-            string formulaCalculoAreaString = FormasRepository.FormulaCalculoArea(idForma);
-
-            foreach (var item in formasGeometricas)
+            string f = "";
+            switch (_idioma)
             {
-                formulaCalculoAreaString = formulaCalculoAreaString.Replace("_lado", item._lado.ToString());
-                decimal formulaCalculoArea = (decimal) dt.Compute(formulaCalculoAreaString, "");
-                area += formulaCalculoArea;
+                case Castellano:
+                    f = "Perimetro";
+                    break;
+                case Frances:
+                    f = "Périmètre";
+                    break;
+                default:
+                    f = "Perimeter";
+                    break;
             }
-
-            return area;
+            return f;
         }
 
-        private static decimal CalcularPerimetroDeForma(List<FormaGeometrica> formasGeometricas, int idForma)
+        private static string ObtenerTraduccionArea()
         {
-            DataTable dt = new DataTable();
-            decimal perimetro = 0;
-
-            string formulaCalculoPerimetroString = FormasRepository.FormulaCalculoPerimetro(idForma);
-
-            foreach (var item in formasGeometricas)
+            string f = "";
+            switch (_idioma)
             {
-                formulaCalculoPerimetroString = formulaCalculoPerimetroString.Replace("_lado", item._lado.ToString());
-                decimal formulaCalculoPerimetro = (decimal)dt.Compute(formulaCalculoPerimetroString, "");
-                perimetro += formulaCalculoPerimetro;
+                case Castellano:
+                    f = "Area";
+                    break;
+                case Frances:
+                    f = "Région";
+                    break;
+                default:
+                    f = "Area";
+                    break;
             }
-
-            return perimetro;
+            return f;
         }
 
-        private static string ObtenerLinea(int cantidad, decimal area, decimal perimetro, int tipo, int idioma)
+        private static string ObtenerTraduccionFomas()
         {
-            if (cantidad > 0)
+            string f = "";
+            switch (_idioma)
             {
-                return $"{cantidad} {TraducirForma(tipo, cantidad, idioma)} | " +
-                    $"{TraduccionRepository.Area(idioma)} {area:#.##} | " +
-                    $"{TraduccionRepository.Perimetro(idioma)} {perimetro:#.##} <br/>";
+                case Castellano:
+                    f = "formas";
+                    break;
+                case Frances:
+                    f = "formes";
+                    break;
+                default:
+                    f = "shapes";
+                    break;
             }
-
-            return string.Empty;
+            return f;
         }
 
-        private static string TraducirForma(int tipo, int cantidad, int idioma)
+        private static void InicializarVariables(out int numeroCuadrados, out int numeroCirculos, out int numeroTriangulos, out int numeroTrapecios, out decimal areaCuadrados, out decimal areaCirculos, out decimal areaTriangulos, out decimal areaTrapecios, out decimal perimetroCuadrados, out decimal perimetroCirculos, out decimal perimetroTriangulos, out decimal perimetroTrapecios)
         {
-            return FormasIdiomasRepository.TraducirForma(tipo, cantidad, idioma);
+            numeroCuadrados = 0;
+            numeroCirculos = 0;
+            numeroTriangulos = 0;
+            numeroTrapecios = 0;
+            areaCuadrados = 0m;
+            areaCirculos = 0m;
+            areaTriangulos = 0m;
+            areaTrapecios = 0m;
+            perimetroCuadrados = 0m;
+            perimetroCirculos = 0m;
+            perimetroTriangulos = 0m;
+            perimetroTrapecios = 0m;
+        }
+
+        private static void TituloReporteDeFormas(StringBuilder sb)
+        {
+            switch (_idioma)
+            {
+                case Castellano:
+                    sb.Append("<h1>Reporte de Formas</h1>");
+                    break;
+                case Frances:
+                    sb.Append("<h1>Rapport de formes géométriques</h1>");
+                    break;
+                default:
+                    sb.Append("<h1>Shapes report</h1>");
+                    break;
+            }
+        }
+
+        private static StringBuilder MensajeListaVacia(StringBuilder sb)
+        {
+            StringBuilder mje;
+            switch (_idioma)
+            {
+                case Castellano:
+                    mje = sb.Append("<h1>Lista vacía de formas!</h1>");
+                    break;
+                case Frances:
+                    mje = sb.Append("<h1>Liste vide de formes géométriques!</h1>");
+                    break;
+                default:
+                    mje = sb.Append("<h1>Empty list of shapes!</h1>");
+                    break;
+            }
+            return mje;
+        }
+
+        private static string ObtenerLinea(int cantidad, decimal area, decimal perimetro, int tipo)
+        {
+            if (cantidad <= 0) return string.Empty;
+
+            return cantidad == 1 ? TraducirFormaLineaCompleta(tipo, area, perimetro) : TraducirFormasLineaCompleta(tipo, area, perimetro, cantidad);
+        }
+        private static string TraducirFormaLineaCompleta(int tipo, decimal area, decimal perimetro)
+        {
+            string f = "";
+            switch (tipo)
+            {
+                case Cuadrado:
+                    f = "Square";
+                    if (_idioma == Castellano) f = "Cuadrado";
+                    if (_idioma == Frances) f = "Carré";
+                    break;
+                case Circulo:
+                    f = "Circle";
+                    if (_idioma == Castellano) f = "Circulo";
+                    if (_idioma == Frances) f = "Cercle";
+                    break;
+                case TrianguloEquilatero:
+                    f = "Triangle";
+                    if (_idioma == Castellano) f = "Triangulo";
+                    if (_idioma == Frances) f = "Triangle";
+                    break;
+                case TrapecioRectangulo:
+                    f = "Trapeze";
+                    if (_idioma == Castellano) f = "Trapecio";
+                    if (_idioma == Frances) f = "Trapèze";
+                    break;
+                default:
+                    break;
+            }
+
+            return String.Format("{0} {1} | {2} {3:#.##} | {4} {5:#.##} <br/>", 1, f, ObtenerTraduccionArea(), area, ObtenerTraduccionPerimetro(), perimetro);
+        }
+        private static string TraducirFormasLineaCompleta(int tipo, decimal area, decimal perimetro, int cantidad)
+        {
+            string f = "";
+            switch (tipo)
+            {
+                case Cuadrado:
+                    f = "Squares";
+                    if (_idioma == Castellano) f = "Cuadrados";
+                    if (_idioma == Frances) f = "Carrés";
+                    break;
+                case Circulo:
+                    f = "Circles";
+                    if (_idioma == Castellano) f = "Círculos";
+                    if (_idioma == Frances) f = "Cercles";
+                    break;
+                case TrianguloEquilatero:
+                    f = "Triangles";
+                    if (_idioma == Castellano) f = "Triángulos";
+                    if (_idioma == Frances) f = "Triangles";
+                    break;
+                case TrapecioRectangulo:
+                    f = "Trapezes";
+                    if (_idioma == Castellano) f = "Trapecios";
+                    if (_idioma == Frances) f = "Trapèzes";
+                    break;
+                default:
+                    break;
+            }
+
+            return String.Format("{0} {1} | {2} {3:#.##} | {4} {5:#.##} <br/>", cantidad, f, ObtenerTraduccionArea(), area, ObtenerTraduccionPerimetro(), perimetro);
         }
 
         public decimal CalcularArea()
@@ -167,6 +290,7 @@ namespace CodingChallenge.Data.Classes
                 case Cuadrado: return _lado * _lado;
                 case Circulo: return (decimal)Math.PI * (_lado / 2) * (_lado / 2);
                 case TrianguloEquilatero: return ((decimal)Math.Sqrt(3) / 4) * _lado * _lado;
+                case TrapecioRectangulo: return _lado * _altura;
                 default:
                     throw new ArgumentOutOfRangeException(@"Forma desconocida");
             }
@@ -179,6 +303,7 @@ namespace CodingChallenge.Data.Classes
                 case Cuadrado: return _lado * 4;
                 case Circulo: return (decimal)Math.PI * _lado;
                 case TrianguloEquilatero: return _lado * 3;
+                case TrapecioRectangulo: return _lado * 2 + _altura * 2;
                 default:
                     throw new ArgumentOutOfRangeException(@"Forma desconocida");
             }
